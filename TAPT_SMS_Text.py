@@ -25,10 +25,17 @@ for ix in range(0,len(tapt_sms_dataframe.index)):
     temp_timeflag_afternoon = tapt_sms_dataframe.iloc[ix,6]
     temp_timeflag_evening = tapt_sms_dataframe.iloc[ix,7]
 
+    temp_phone_plus = "+" + str()
+
     #construct body of SMS text
-    temp_sms_body = ''
-    temp_sms_body = temp_sms_body + 'Hello ' + temp_name + ', this is a message from the UCSF TAPT study. '
-    temp_sms_body = temp_sms_body + 'We\'d like to remind you to watch the video on posture and practice today. '
-    temp_sms_body = temp_sms_body + 'You may watch the video at this website: ' + temp_videourl
+    temp_sms_body = ""
+    temp_sms_body = temp_sms_body + "Hello " + temp_name + ", this is a message from the UCSF TAPT study. ""
+    temp_sms_body = temp_sms_body + "We\'d like to remind you to watch the video on posture and practice today. "
+    temp_sms_body = temp_sms_body + "You may watch the video at this website: " + temp_videourl
 
     #add twilio sms out data here
+    #client.messages.create(
+    #    to=temp_phone_plus,
+    #    from_=twilio_phone,
+    #    body=temp_sms_body
+    #)
