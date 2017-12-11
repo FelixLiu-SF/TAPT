@@ -25,7 +25,7 @@ for ix in range(0,len(tapt_sms_dataframe.index)):
     temp_timeflag_afternoon = tapt_sms_dataframe.iloc[ix,6]
     temp_timeflag_evening = tapt_sms_dataframe.iloc[ix,7]
 
-    temp_phone_plus = "+" + str()
+    temp_phone_plus = "+" + str(temp_phone)
 
     #construct body of SMS text
     temp_sms_body = ""
