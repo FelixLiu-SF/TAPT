@@ -36,7 +36,13 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     temp_timeflag_afternoon = tapt_merged_dataframe.iloc[ix,6]
     temp_timeflag_evening = tapt_merged_dataframe.iloc[ix,7]
 
+    #process spreadsheet data
     temp_phone_plus = "+" + str(temp_phone)
+    temp_name = str(temp_name)
+    temp_videourl = str(temp_videourl)
+    temp_timeflag_morning = int(temp_timeflag_morning)
+    temp_timeflag_afternoon = int(temp_timeflag_afternoon)
+    temp_timeflag_evening = int(temp_timeflag_evening)
 
     #construct body of SMS text
     temp_sms_body = ""
@@ -55,8 +61,11 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     if not(math.isnan(temp_greeting_flag)):
         #not a new subject. no greeting needed
         print(str(ix))
-        print(temp_phone_plus)
-        print(temp_sms_body)
+
+        if temp_timeflag_afternoon:
+            print(temp_phone_plus)
+            print(temp_sms_body)
+
         print(" ")
     else:
         #new subject! greet the subject!
@@ -65,9 +74,12 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
         print(str(ix))
         print(temp_sms_greeting)
-        print(temp_phone_plus)
-        print(temp_sms_body)
         print(" ")
+
+        if temp_timeflag_afternoon:
+            print(temp_phone_plus)
+            print(temp_sms_body)
+            print(" ")
 
     #add twilio sms out data here
     #client.messages.create(
