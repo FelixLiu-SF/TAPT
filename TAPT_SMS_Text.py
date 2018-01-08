@@ -65,10 +65,10 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
         print(" ")
 
     #add twilio sms out data here
-    #client.messages.create(
-    #    to=temp_phone_plus,
-    #    from_=twilio_phone,
-    #    body=temp_sms_body
-    #)
+    client.messages.create(
+       to=temp_phone_plus,
+       from_=twilio_phone,
+       body=temp_sms_body
+    )
 
 tapt_greeting_dataframe.to_csv(filepath_csv_greeting,index=False)
