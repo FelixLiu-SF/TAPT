@@ -40,9 +40,14 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
     #construct body of SMS text
     temp_sms_body = ""
-    temp_sms_body = temp_sms_body + "Hello " + temp_name + ", this is a message from the UCSF TAPT study. "
-    temp_sms_body = temp_sms_body + "We\'d like to remind you to watch the video on posture and practice today. "
-    temp_sms_body = temp_sms_body + "You may watch the video at this website: " + temp_videourl
+    temp_sms_body = temp_sms_body + "Please watch the video today. Practice the video tips 3x/day or more and hold for 10 seconds for good posture. Increase slowly as you get stronger (goal is 5 minutes). "
+    temp_sms_body = temp_sms_body + temp_videourl
+
+    #construct greeting SMS texts
+    temp_sms_greeting = ""
+    temp_sms_greeting = temp_sms_greeting + "Hello " + temp_name + ", this is the TAPT study. Welcome to the study. "
+    temp_sms_greeting = temp_sms_greeting + "You can expect daily text messages from us, depending upon your preferences, from 8am-5pm every day of the week. "
+    temp_sms_greeting = temp_sms_greeting + "At least one message will contain a video link. The last message of the day will ask if you practiced, and prompt for a reply. "
 
     #check greeting status
     temp_greeting_flag = tapt_merged_dataframe.iloc[ix,9]
@@ -53,22 +58,38 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
         print(temp_phone_plus)
         print(temp_sms_body)
         print(" ")
+
+        #send an SMS text message
+        client.messages.create(
+           to=temp_phone_plus,
+           from_=twilio_phone,
+           body=temp_sms_body
+        )
+
     else:
         #new subject! greet the subject!
 
         tapt_greeting_dataframe = tapt_greeting_dataframe.append({'SubjectID': temp_ID,'GreetingName': temp_name,'GreetingSent':1},ignore_index=True)
 
         print(str(ix))
-        print("Greetings!")
+        print(temp_sms_greeting)
+
+        #send an SMS text message
+        client.messages.create(
+           to=temp_phone_plus,
+           from_=twilio_phone,
+           body=temp_sms_greeting
+        )
+
         print(temp_phone_plus)
         print(temp_sms_body)
         print(" ")
 
-    #add twilio sms out data here
-    client.messages.create(
-       to=temp_phone_plus,
-       from_=twilio_phone,
-       body=temp_sms_body
-    )
+        #send an SMS text message
+        client.messages.create(
+           to=temp_phone_plus,
+           from_=twilio_phone,
+           body=temp_sms_body
+        )
 
 tapt_greeting_dataframe.to_csv(filepath_csv_greeting,index=False)
