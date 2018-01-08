@@ -37,7 +37,7 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     temp_timeflag_evening = tapt_merged_dataframe.iloc[ix,7]
 
     #process spreadsheet data
-    temp_phone_plus = "+" + str(temp_phone)
+    temp_phone_plus = "+1" + str(temp_phone)
     temp_name = str(temp_name)
     temp_videourl = str(temp_videourl)
     temp_timeflag_morning = int(temp_timeflag_morning)

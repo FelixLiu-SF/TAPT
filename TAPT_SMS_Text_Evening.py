@@ -37,7 +37,7 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     temp_timeflag_evening = tapt_merged_dataframe.iloc[ix,7]
 
     #process spreadsheet data
-    temp_phone_plus = "+" + str(temp_phone)
+    temp_phone_plus = "+1" + str(temp_phone)
     temp_name = str(temp_name)
     temp_videourl = str(temp_videourl)
     temp_timeflag_morning = int(temp_timeflag_morning)
@@ -55,6 +55,12 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     temp_sms_greeting = temp_sms_greeting + "You can expect daily text messages from us, depending upon your preferences, from 8am-5pm every day of the week. "
     temp_sms_greeting = temp_sms_greeting + "At least one message will contain a video link. The last message of the day will ask if you practiced, and prompt for a reply. "
     temp_sms_greeting = temp_sms_greeting + "Please contact Shirley Wong at Wong2@ucsf.edu if you have any questions. "
+
+    #construct questionnaire SMS text
+    temp_sms_question = ""
+    temp_sms_question = temp_sms_question + "Did you practice today? Please reply 0 or 1."
+    temp_sms_question = temp_sms_question + "1 = Yes, I practiced 3x or more"
+    temp_sms_question = temp_sms_question + "0 = No, I did not practice 3x today"
 
     #check greeting status
     temp_greeting_flag = tapt_merged_dataframe.iloc[ix,9]
