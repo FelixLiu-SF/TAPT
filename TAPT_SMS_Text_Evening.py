@@ -81,6 +81,25 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
                body=temp_sms_body
             )
 
+            print(temp_sms_question)
+
+            #send questionnare
+            client.messages.create(
+               to=temp_phone_plus,
+               from_=twilio_phone,
+               body=temp_sms_question
+            )
+        else:
+            # no reminder, but ask the questionnaire
+            print(temp_sms_question)
+
+            #send questionnare
+            client.messages.create(
+               to=temp_phone_plus,
+               from_=twilio_phone,
+               body=temp_sms_question
+            )
+
         print(" ")
 
     else:
@@ -95,7 +114,7 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
             print(temp_sms_greeting)
 
-            #send an SMS text message
+            #send greeting
             client.messages.create(
                to=temp_phone_plus,
                from_=twilio_phone,
@@ -103,7 +122,6 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
             )
 
             print(temp_sms_body)
-            print(" ")
 
             #send an SMS text message
             client.messages.create(
@@ -111,5 +129,16 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
                from_=twilio_phone,
                body=temp_sms_body
             )
+
+            print(temp_sms_question)
+            print(" ")
+
+            #send questionnare
+            client.messages.create(
+               to=temp_phone_plus,
+               from_=twilio_phone,
+               body=temp_sms_question
+            )
+
 
 tapt_greeting_dataframe.to_csv(filepath_csv_greeting,index=False)
