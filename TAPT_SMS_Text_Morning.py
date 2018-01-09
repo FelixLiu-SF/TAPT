@@ -46,14 +46,14 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
     #construct body of SMS text
     temp_sms_body = ""
-    temp_sms_body = temp_sms_body + "Please watch the video today. Practice the video tips 3x/day or more and hold for 10 seconds for good posture. Increase slowly as you get stronger (goal is 5 minutes). "
+    temp_sms_body = temp_sms_body + "Please watch the video today. Practice the video tips 3x/day or more and hold for 10 seconds for good posture. Increase slowly as you get stronger (goal is 5 minutes).\n"
     temp_sms_body = temp_sms_body + temp_videourl
 
     #construct greeting SMS texts
     temp_sms_greeting = ""
-    temp_sms_greeting = temp_sms_greeting + "Hello " + temp_name + ", this is the TAPT study. Welcome to the study. "
+    temp_sms_greeting = temp_sms_greeting + "Hello " + temp_name + ", this is the TAPT study. Welcome to the study.\n"
     temp_sms_greeting = temp_sms_greeting + "You can expect daily text messages from us, depending upon your preferences, from 8am-5pm every day of the week. "
-    temp_sms_greeting = temp_sms_greeting + "At least one message will contain a video link. The last message of the day will ask if you practiced, and prompt for a reply. "
+    temp_sms_greeting = temp_sms_greeting + "At least one message will contain a video link. The last message of the day will ask if you practiced, and prompt for a reply.\n"
     temp_sms_greeting = temp_sms_greeting + "Please contact Shirley Wong at Wong2@ucsf.edu if you have any questions. "
 
     #check greeting status
