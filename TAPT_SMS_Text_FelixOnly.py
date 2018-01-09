@@ -3,7 +3,7 @@ import numpy as np
 from twilio.rest import Client
 
 #read in twilio authentication info
-twilio_dataframe = pd.read_csv("TwilioAuth.csv")
+twilio_dataframe = pd.read_csv("TwilioAuth_trial.csv")
 account_sid = str(twilio_dataframe.iloc[0,0])
 auth_token = str(twilio_dataframe.iloc[0,1])
 twilio_phone = "+" + str(twilio_dataframe.iloc[0,2])
