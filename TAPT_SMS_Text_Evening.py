@@ -58,8 +58,8 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
     #construct questionnaire SMS text
     temp_sms_question = ""
-    temp_sms_question = temp_sms_question + "Did you practice today? Please reply 0 or 1: "
-    temp_sms_question = temp_sms_question + "1 = Yes, I practiced 3x or more. "
+    temp_sms_question = temp_sms_question + "Did you practice today? Please reply 0 or 1: \n"
+    temp_sms_question = temp_sms_question + "1 = Yes, I practiced 3x or more. \n"
     temp_sms_question = temp_sms_question + "0 = No, I did not practice 3x today. "
 
     #check greeting status
