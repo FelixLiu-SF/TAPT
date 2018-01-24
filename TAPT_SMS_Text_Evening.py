@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
+import time
 from twilio.rest import Client
 
 # filename parameters
@@ -132,6 +133,7 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
             print(temp_sms_question)
             print(" ")
+            time.sleep(3)
 
             #send questionnare
             client.messages.create(
