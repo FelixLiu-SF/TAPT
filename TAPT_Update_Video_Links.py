@@ -29,7 +29,7 @@ tapt_enrolled_dataframe = pd.read_csv(filepath_csv_enrollment, index_col='StudyI
 date_today_dt = dt.datetime.today() # today's date
 date_format = '%m/%d/%Y' # date format of enrollment spreadsheet
 
-del_array = [] # initialize array for deleting rows
+del_array = list() # initialize array for deleting rows
 
 
 for ix in range(0,len(tapt_sms_dataframe.index)):
@@ -73,9 +73,9 @@ for ix in range(0,len(tapt_sms_dataframe.index)):
     else:
 
         # officially over 6 weeks enrolled in the study, remove this ppt
-        del_array = [del_array, ix]
+        del_array.append(ix)
 
-if len(del_array>0):
+if len(del_array)>0.5:
     for jx in range(0,len(del_array)):
 
         tapt_sms_dataframe.drop(tapt_sms_dataframe.index[del_array], inplace=True)
