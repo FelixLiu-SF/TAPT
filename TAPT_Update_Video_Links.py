@@ -34,44 +34,52 @@ for ix in range(0,len(tapt_sms_dataframe.index)):
     temp_ID = tapt_sms_dataframe.iloc[ix,0]
 
     # look up enrollment date for this participant
-    date_enrolled_str = tapt_enrolled_dataframe.loc[temp_ID, 'VideoStartDates']
-    date_enrolled_dt = dt.datetime.strptime(date_enrolled_str, date_format)
+    reindex_enrolled_dataframe = tapt_enrolled_dataframe.reindex([temp_ID], copy=True, fill_value='missing') # reindex the dataframe to catch missing ppts
+    date_enrolled_str = reindex_enrolled_dataframe.loc[temp_ID, 'VideoStartDates']
 
-    # calculate days since enrollment
-    dt_since_enrollment = date_today_dt - date_enrolled_dt
-    days_since_enrollment = dt_since_enrollment.days
+    # continue is ppt was non missing (not a NaN value for date)
+    if date_enrolled_str!='missing':
+        date_enrolled_dt = dt.datetime.strptime(date_enrolled_str, date_format)
 
-    # update links or delete finished ppts
-    if days_since_enrollment<=(6*7):
+        # calculate days since enrollment
+        dt_since_enrollment = date_today_dt - date_enrolled_dt
+        days_since_enrollment = dt_since_enrollment.days
 
-        # enrolled less than or equal to 6 weeks, update video link
+        # update links or delete finished ppts
+        if days_since_enrollment<=(6*7):
 
-        fullweeks_since_enrollment = days_since_enrollment//int(7)
-        remain_in_week_enrollment = days_since_enrollment%7
+            # enrolled less than or equal to 6 weeks, update video link
 
-        #sanitize the week-index
-        if remain_in_week_enrollment>0.5:
+            fullweeks_since_enrollment = days_since_enrollment//int(7)
+            remain_in_week_enrollment = days_since_enrollment%7
 
-            # ppt is in the next week
-            current_week_index = max([fullweeks_since_enrollment,0])
-            current_week_index = min([current_week_index,5])
+            #sanitize the week-index
+            if remain_in_week_enrollment>0.5:
 
-        else:
+                # ppt is in the next week
+                current_week_index = max([fullweeks_since_enrollment,0])
+                current_week_index = min([current_week_index,5])
 
-            # ppt is on the last day of this week
-            current_week_index = max([fullweeks_since_enrollment-1,0])
-            current_week_index = min([current_week_index,5])
+            else:
 
-        # get the video url link
-        current_video_url = tapt_week_video_url[current_week_index]
+                # ppt is on the last day of this week
+                current_week_index = max([fullweeks_since_enrollment-1,0])
+                current_week_index = min([current_week_index,5])
 
-        # replace video url link in master txt msg spreadsheet
-        tapt_sms_dataframe.iloc[ix,3] = current_video_url
+            # get the video url link
+            current_video_url = tapt_week_video_url[current_week_index]
 
-    elif days_since_enrollment>(6*7):
+            # replace video url link in master txt msg spreadsheet
+            tapt_sms_dataframe.iloc[ix,3] = current_video_url
 
-        # officially over 6 weeks enrolled in the study, remove this ppt
-        del_array.append(ix)
+        elif days_since_enrollment>(6*7):
+
+            # officially over 6 weeks enrolled in the study, remove this ppt
+            del_array.append(ix)
+
+    else:
+        print('The ID below is missing from the enrollment log')
+        print(temp_ID)
 
 # delete ppts who have finished the study, if any
 if len(del_array)>0.5:
