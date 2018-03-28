@@ -30,31 +30,11 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     temp_ID = tapt_merged_dataframe.iloc[ix,0]
     temp_name = tapt_merged_dataframe.iloc[ix,1]
     temp_phone = tapt_merged_dataframe.iloc[ix,2]
-    temp_timeflag_morning = tapt_merged_dataframe.iloc[ix,3]
-    temp_timeflag_afternoon = tapt_merged_dataframe.iloc[ix,4]
-    temp_timeflag_evening = tapt_merged_dataframe.iloc[ix,5]
-
-    #extract video urls
-    temp_videourl1 = tapt_merged_dataframe.iloc[ix,6]
-    temp_videourl2 = tapt_merged_dataframe.iloc[ix,7]
-    temp_videourl3 = tapt_merged_dataframe.iloc[ix,8]
-    temp_videourl4 = tapt_merged_dataframe.iloc[ix,9]
-    temp_videourl5 = tapt_merged_dataframe.iloc[ix,10]
-    temp_videourl6 = tapt_merged_dataframe.iloc[ix,11]
-    temp_videourl7 = tapt_merged_dataframe.iloc[ix,12]
-
-    #check greeting & study status
-    temp_greeting_flag = tapt_merged_dataframe.iloc[ix,14]
-    temp_study_day = tapt_merged_dataframe.iloc[ix,15]
-
-    #process study status data
-    if not(math.isnan(temp_study_day)): #does this person have a study status?
-        #not a new subject, adjust video url date
-        temp_study_day = int(temp_study_day)
-        #insert switch code here
-    else:
-        temp_study_day = 1
-        temp_videourl = temp_videourl1
+    temp_videourl = tapt_merged_dataframe.iloc[ix,3]
+    temp_surveyurl = tapt_merged_dataframe.iloc[ix,4]
+    temp_timeflag_morning = tapt_merged_dataframe.iloc[ix,5]
+    temp_timeflag_afternoon = tapt_merged_dataframe.iloc[ix,6]
+    temp_timeflag_evening = tapt_merged_dataframe.iloc[ix,7]
 
     #process spreadsheet data
     temp_phone_plus = "+1" + str(temp_phone)
@@ -76,7 +56,9 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
     temp_sms_greeting = temp_sms_greeting + "At least one message will contain a video link. The last message of the day will ask if you practiced, and prompt for a reply.\n"
     temp_sms_greeting = temp_sms_greeting + "Please contact Shirley Wong at Wong2@ucsf.edu if you have any questions. "
 
-    #check for greeting
+    #check greeting status
+    temp_greeting_flag = tapt_merged_dataframe.iloc[ix,9]
+
     if not(math.isnan(temp_greeting_flag)):
         #not a new subject. no greeting needed
         print(str(ix))
@@ -103,7 +85,7 @@ for ix in range(0,len(tapt_merged_dataframe.index)):
 
         if temp_timeflag_morning:
 
-            tapt_greeting_dataframe = tapt_greeting_dataframe.append({'SubjectID': temp_ID,'GreetingName': temp_name,'GreetingSent':1,'StudyDay': temp_study_day},ignore_index=True)
+            tapt_greeting_dataframe = tapt_greeting_dataframe.append({'SubjectID': temp_ID,'GreetingName': temp_name,'GreetingSent':1},ignore_index=True)
 
             print(temp_sms_greeting)
 
