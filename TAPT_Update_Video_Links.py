@@ -85,7 +85,7 @@ for ix in range(0,len(tapt_sms_dataframe.index)):
 if len(del_array)>0.5:
     for jx in range(0,len(del_array)):
 
-        tapt_sms_dataframe.drop(tapt_sms_dataframe.index[del_array], inplace=True)
+        tapt_sms_dataframe.drop(tapt_sms_dataframe.index[del_array[ix]], inplace=True)
 
 
 # write out new master txt msg spreadsheet
