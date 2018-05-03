@@ -81,12 +81,13 @@ for ix in range(0,len(tapt_sms_dataframe.index)):
         print('The ID below is missing from the enrollment log')
         print(temp_ID)
 
+print(tapt_sms_dataframe)
+
 # delete ppts who have finished the study, if any
 if len(del_array)>0.5:
-    for jx in range(0,len(del_array)):
-
-        tapt_sms_dataframe.drop(tapt_sms_dataframe.index[del_array[ix]], inplace=True)
-
+    print('Delete finished ppts')
+    tapt_sms_dataframe.drop(del_array, inplace=True)
+    print(tapt_sms_dataframe)
 
 # write out new master txt msg spreadsheet
 tapt_sms_dataframe.to_csv(filepath_csv_sms, index=False)
