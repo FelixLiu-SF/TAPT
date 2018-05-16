@@ -34,14 +34,20 @@ tapt_sms_raw_data_f = 'C:\Users\fliu2\Box Sync\UCSF_TAPT_Share\UCSF_TAPT_Receive
 
 [~,~,x_raw_data] = xlsread(tapt_sms_raw_data_f);
 
-% convert date/time and change to pacific time
+% convert date/time and change to pacific time but remember daylight savings time
+spring_foward_utc = datenum(2018,3,11,10,0,0);
 f_datetime = indcfind(x_raw_data(1,:),'^DateTime$','regexpi');
 x_pst_data = x_raw_data;
 for ix = 2:size(x_raw_data,1)
 
   tmp_raw_dt = x_raw_data{ix,f_datetime};
   tmp_matlab_dt = datenum(tmp_raw_dt,'yyyy-mm-dd HH:MM:SS');
-  tmp_matlab_dt_pst = tmp_matlab_dt-datenum(0,0,0,8,0,0);
+  
+  if(tmp_matlab_dt<spring_foward_utc)
+      tmp_matlab_dt_pst = tmp_matlab_dt-datenum(0,0,0,8,0,0);
+  else
+      tmp_matlab_dt_pst = tmp_matlab_dt-datenum(0,0,0,7,0,0);
+  end
 
   x_pst_data{ix,f_datetime} = tmp_matlab_dt_pst;
 
@@ -64,6 +70,70 @@ x_pst_data_01 = x_pst_data(indcfind(x_pst_data(:,f_body),'^(0|1)$','regexpi'),:)
 unique_fromnumbers = unique(x_pst_data_01(:,f_fromnumber));
 
 % look up metadata from enrollment
+for ix=1:size(unique_fromnumbers,1)
+   
+    tmp_fromnumber = unique_fromnumbers{ix,1};
+    jx = indcfind(x_enrolled(:,f_cellphone),tmp_fromnumber,'regexpi');
+    tmp_BLdate = x_enrolled{jx(1),f_baseline};
+    unique_fromnumbers{ix,2} = tmp_BLdate; 
+    
+end
+
+% collect unique answers by day
+x_pst_data_01_byday = {};
+
+for ix=1:size(unique_fromnumbers,1)
+
+    tmp_fromnumber = unique_fromnumbers{ix,1};
+    tmp_BLdate = unique_fromnumbers{ix,2};
+    
+    tmp_chunk = x_pst_data_01(indcfind(x_pst_data_01(:,f_fromnumber),tmp_fromnumber,'regexpi'),:);
+    
+    tmp_chunk_dt = cell2mat(tmp_chunk(:,f_datetime));
+    
+    for jx=1:42
+        
+        tmp_day = tmp_BLdate + jx;
+        
+        kx = find(tmp_chunk_dt>=tmp_day & tmp_chunk_dt<(tmp_day+1));
+        
+        if(isempty(kx))
+            % no response this day
+            
+        elseif(size(kx,1)==1)
+            % use this record
+            x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(kx(1),:)];
+            
+        elseif(size(kx,1)>1)
+            % multiple responses
+            
+            tmp_unique_body = unique(tmp_chunk(kx,f_body));
+            if(size(tmp_unique_body,1)==1)
+                % responses for the day are consistent, use 1st response
+                x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(kx(1),:)];
+                
+            else
+                % non-unique responses for the day
+                
+                % try to choose only responses close to 8 pm
+                lx = find(tmp_chunk_dt>=(tmp_day+datenum(0,0,0,8,0,0)) & tmp_chunk_dt<(tmp_day+1));
+                
+                if(size(lx,1)==1)
+                    % only 1 response around 8 pm, use this record
+                    x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(lx(1),:)];
+                else
+                    % if that doesn't work, choose the latest response
+                    x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(lx(1),:)];
+                    
+                end
+                
+            end
+        end
+        
+    end
+    
+end
+
 
 % summarize over whole study
 x_summary_study = {};
@@ -71,9 +141,9 @@ h_summary_study = {'From', 'NumberResponses_0', 'NumberResponses_1'};
 for ix=1:size(unique_fromnumbers,1)
 
   tmp_fromnum = unique_fromnumbers{ix,1};
-  jx = indcfind(x_pst_data_01(:,f_fromnumber),tmp_fromnum,'regexpi');
+  jx = indcfind(x_pst_data_01_byday(:,f_fromnumber),tmp_fromnum,'regexpi');
 
-  tmp_chunk = x_pst_data_01(jx,:);
+  tmp_chunk = x_pst_data_01_byday(jx,:);
 
   tmp_0 = size(indcfind(tmp_chunk(:,f_body),'^0$','regexpi'),1);
   tmp_1 = size(indcfind(tmp_chunk(:,f_body),'^1$','regexpi'),1);
@@ -81,9 +151,15 @@ for ix=1:size(unique_fromnumbers,1)
   x_summary_study{ix,1} = tmp_fromnum;
   x_summary_study{ix,2} = tmp_0;
   x_summary_study{ix,3} = tmp_1;
-  x_summary_study{ix,4} = (tmp_0/(42))*100;
-  x_summary_study{ix,5} = (tmp_1/(42))*100;
-  x_summary_study{ix,6} = (tmp_1/(tmp_0+tmp_1))*100;
+  x_summary_study{ix,4} = (tmp_0+tmp_1);
+  x_summary_study{ix,5} = (tmp_0/(42))*100;
+  x_summary_study{ix,6} = (tmp_1/(42))*100;
+  
+  if((tmp_0+tmp_1)>0)
+      x_summary_study{ix,7} = (tmp_1/(tmp_0+tmp_1))*100;
+  else
+      x_summary_study{ix,7} = 0;
+  end
 
 end
 
