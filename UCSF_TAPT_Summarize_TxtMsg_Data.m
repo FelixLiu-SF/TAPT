@@ -137,13 +137,12 @@ end
 
 % summarize over whole study
 x_summary_study = {};
-h_summary_study = {'From', 'NumberResponses_0', 'NumberResponses_1'};
+h_summary_study = {'From', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1'};
 for ix=1:size(unique_fromnumbers,1)
 
   tmp_fromnum = unique_fromnumbers{ix,1};
-  jx = indcfind(x_pst_data_01_byday(:,f_fromnumber),tmp_fromnum,'regexpi');
-
-  tmp_chunk = x_pst_data_01_byday(jx,:);
+  
+  tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromnumber),tmp_fromnum,'regexpi'),:);
 
   tmp_0 = size(indcfind(tmp_chunk(:,f_body),'^0$','regexpi'),1);
   tmp_1 = size(indcfind(tmp_chunk(:,f_body),'^1$','regexpi'),1);
@@ -164,3 +163,50 @@ for ix=1:size(unique_fromnumbers,1)
 end
 
 % summarize week by week
+x_summary_week = {};
+h_summary_week = {'From', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1', 'Week'};
+index = 0;
+
+for ix=1:size(unique_fromnumbers,1)
+
+
+  tmp_fromnum = unique_fromnumbers{ix,1};
+  tmp_BLdate = unique_fromnumbers{ix,2};
+  
+  tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromnumber),tmp_fromnum,'regexpi'),:);
+  tmp_chunk = sortrows(tmp_chunk,f_datetime);
+  tmp_chunk_dt = cell2mat(tmp_chunk(:,f_datetime));
+  
+  for jx=1:6
+      
+        index = index+1;
+        
+        tmp_wk_start = (tmp_BLdate+1) + (jx-1)*7;
+        tmp_wk_stop = (tmp_BLdate+1) + (jx)*7;
+        
+        kx = find(tmp_chunk_dt>=tmp_wk_start & tmp_chunk_dt<tmp_wk_stop);
+        
+        tmp_chunk_wk = tmp_chunk(kx,:);
+        
+        tmp_0 = size(indcfind(tmp_chunk_wk(:,f_body),'^0$','regexpi'),1);
+        tmp_1 = size(indcfind(tmp_chunk_wk(:,f_body),'^1$','regexpi'),1);
+        
+        x_summary_week{index,1} = tmp_fromnum;
+        x_summary_week{index,2} = tmp_0;
+        x_summary_week{index,3} = tmp_1;
+        x_summary_week{index,4} = (tmp_0+tmp_1);
+        x_summary_week{index,5} = (tmp_0/(7))*100;
+        x_summary_week{index,6} = (tmp_1/(7))*100;
+        x_summary_week{index,8} = jx;
+
+        if((tmp_0+tmp_1)>0)
+          x_summary_week{index,7} = (tmp_1/(tmp_0+tmp_1))*100;
+        else
+          x_summary_week{index,7} = 0;
+        end
+        
+  end
+  
+end
+
+
