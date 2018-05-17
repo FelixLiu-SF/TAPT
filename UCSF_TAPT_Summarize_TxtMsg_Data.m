@@ -210,3 +210,11 @@ for ix=1:size(unique_fromnumbers,1)
 end
 
 
+% output csv files
+
+summary_study_outf = horzcat('TAPT_Response_Summary_Study_',datestr(now,'yyyymmdd'),'.csv');
+summary_week_outf = horzcat('TAPT_Response_Summary_Week_',datestr(now,'yyyymmdd'),'.csv');
+
+dlmtxtwrite([h_summary_study; x_summary_study],summary_study_outf,',','cell','',1);
+dlmtxtwrite([h_summary_week; x_summary_week],summary_week_outf,',','cell','',1);
+
