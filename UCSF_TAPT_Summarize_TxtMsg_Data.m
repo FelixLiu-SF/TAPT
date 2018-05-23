@@ -167,7 +167,7 @@ f_BLstr = size(x_pst_data_01_byday,2)-2;
 f_daynum = size(x_pst_data_01_byday,2)-1;
 f_weeknum = size(x_pst_data_01_byday,2);
 
-x_byday = x_pst_data_01_byday(:,[f_StudyID, f_BLstr, f_PSTstr, f_daynum, f_weeknum, f_body]);
+x_byday = x_pst_data_01_byday(:,[f_fromID, f_BLstr, f_PSTstr, f_daynum, f_weeknum, f_body]);
 h_byday = {'StudyID', 'EnrollmentDate', 'ResponseDateTime', 'ResponseDayNumber', 'ResponseWeekNumber', 'ResponseMessage'};
 
 % summarize over whole study
@@ -199,7 +199,7 @@ end
 
 % summarize week by week
 x_summary_week = {};
-h_summary_week = {'StudyID', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1', 'ResponseWeekNumber'};
+h_summary_week = {'StudyID', 'NumberResponsesWk_0', 'NumberResponsesWk_1', 'NumberResponsesWk_Total', 'PercentageTotalPossibleWk_0', 'PercentageTotalPossibleWk_1', 'PercentageTotalWk_1', 'ResponseWeekNumber'};
 index = 0;
 
 for ix=1:size(unique_fromnumbers,1)
