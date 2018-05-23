@@ -32,7 +32,8 @@ for ix=1:size(x_enrolled,1)
 end
 
 % read in raw txt msg data
-tapt_sms_raw_data_f = 'C:\Users\fliu2\Box Sync\UCSF_TAPT_Share\UCSF_TAPT_ReceivedMessages.csv';
+% tapt_sms_raw_data_f = 'C:\Users\fliu2\Box Sync\UCSF_TAPT_Share\UCSF_TAPT_ReceivedMessages.csv';
+tapt_sms_raw_data_f = 'UCSF_TAPT_ReceivedMessages_20180523_processed.csv';
 
 [~,~,x_raw_data] = xlsread(tapt_sms_raw_data_f);
 
@@ -109,12 +110,16 @@ for ix=1:size(unique_fromnumbers,1)
         
         kx = find(tmp_chunk_dt>=tmp_day & tmp_chunk_dt<(tmp_day+1));
         
+        tmp_new_row = {};
+        
+        % collect only 1 record per day
         if(isempty(kx))
             % no response this day
+            tmp_new_row = {};
             
         elseif(size(kx,1)==1)
             % use this record
-            x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(kx(1),:)];
+            tmp_new_row = tmp_chunk(kx(1),:);
             
         elseif(size(kx,1)>1)
             % multiple responses
@@ -122,7 +127,7 @@ for ix=1:size(unique_fromnumbers,1)
             tmp_unique_body = unique(tmp_chunk(kx,f_body));
             if(size(tmp_unique_body,1)==1)
                 % responses for the day are consistent, use 1st response
-                x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(kx(1),:)];
+                tmp_new_row = tmp_chunk(kx(1),:);
                 
             else
                 % non-unique responses for the day
@@ -132,20 +137,38 @@ for ix=1:size(unique_fromnumbers,1)
                 
                 if(size(lx,1)==1)
                     % only 1 response around 8 pm, use this record
-                    x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(lx(1),:)];
+                    tmp_new_row = tmp_chunk(lx(1),:);
+                    
                 else
                     % if that doesn't work, choose the latest response
-                    x_pst_data_01_byday = [x_pst_data_01_byday; tmp_chunk(lx(1),:)];
+                    tmp_new_row = tmp_chunk(lx(1),:);
                     
                 end
                 
             end
         end
         
+        if(~isempty(tmp_new_row))
+            
+            tmp_PSTstr = datestr(tmp_new_row{1,f_datetime},'yyyymmdd HH:MM:SS');
+            tmp_BLstr = datestr(tmp_BLdate,'yyyymmdd');
+            
+            tmp_new_row = [tmp_new_row, tmp_PSTstr, tmp_BLstr, jx, ceil(jx/7)];
+            
+            x_pst_data_01_byday = [x_pst_data_01_byday; tmp_new_row];
+        end
+        
     end
     
 end
 
+f_PSTstr = size(x_pst_data_01_byday,2)-3;
+f_BLstr = size(x_pst_data_01_byday,2)-2;
+f_daynum = size(x_pst_data_01_byday,2)-1;
+f_weeknum = size(x_pst_data_01_byday,2);
+
+x_byday = x_pst_data_01_byday(:,[f_StudyID, f_BLstr, f_PSTstr, f_daynum, f_weeknum, f_body]);
+h_byday = {'StudyID', 'EnrollmentDate', 'ResponseDateTime', 'ResponseDayNumber', 'ResponseWeekNumber', 'ResponseMessage'};
 
 % summarize over whole study
 x_summary_study = {};
@@ -176,13 +199,13 @@ end
 
 % summarize week by week
 x_summary_week = {};
-h_summary_week = {'StudyID', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1', 'Week'};
+h_summary_week = {'StudyID', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1', 'ResponseWeekNumber'};
 index = 0;
 
 for ix=1:size(unique_fromnumbers,1)
 
 
-  tmp_StudyID = unique_fromnumbers{ix,1};
+  tmp_StudyID = unique_fromnumbers{ix,3};
   tmp_BLdate = unique_fromnumbers{ix,2};
   
   tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromID),tmp_StudyID,'regexpi'),:);
@@ -226,7 +249,10 @@ end
 
 summary_study_outf = horzcat('TAPT_Response_Summary_Study_',datestr(now,'yyyymmdd'),'.csv');
 summary_week_outf = horzcat('TAPT_Response_Summary_Week_',datestr(now,'yyyymmdd'),'.csv');
+data_byday_outf = horzcat('TAPT_Response_CleanData_ByDay_',datestr(now,'yyyymmdd'),'.csv');
 
 dlmtxtwrite([h_summary_study; x_summary_study],summary_study_outf,',','cell','',1);
 dlmtxtwrite([h_summary_week; x_summary_week],summary_week_outf,',','cell','',1);
+dlmtxtwrite([h_byday; x_byday],data_byday_outf,',','cell','',1);
+
 
