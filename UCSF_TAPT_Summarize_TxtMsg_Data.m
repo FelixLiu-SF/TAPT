@@ -9,8 +9,10 @@ tapt_sms_enrollment_f = 'C:\Users\fliu2\Box Sync\UCSF_TAPT_Share\Participant_Cel
 f_enroll = indcfind(x_raw_enrolled(1,:),'^Enrolled$','regexpi');
 f_cellphone = indcfind(x_raw_enrolled(1,:),'^CellPhone$','regexpi');
 f_baseline = indcfind(x_raw_enrolled(1,:),'^BaselineDate$','regexpi');
+f_StudyID = indcfind(x_raw_enrolled(1,:),'^Study ID$','regexpi');
 
-x_raw_enrolled = x_raw_enrolled(indcfind(x_raw_enrolled(:,indcfind(x_raw_enrolled(1,:),'^Study ID$','regexpi')),'~','nan'),:);
+x_raw_enrolled(:,f_StudyID) = cellfun(@num2str,x_raw_enrolled(:,f_StudyID),'UniformOutput',0);
+x_raw_enrolled = x_raw_enrolled(indcfind(x_raw_enrolled(:,f_StudyID),'~','nan'),:);
 x_raw_enrolled(:,f_enroll) = cellfun(@num2str,x_raw_enrolled(:,f_enroll),'UniformOutput',0);
 
 x_enrolled = x_raw_enrolled(indcfind(x_raw_enrolled(:,f_enroll),'1','regexpi'),:);
@@ -74,21 +76,31 @@ for ix=1:size(unique_fromnumbers,1)
    
     tmp_fromnumber = unique_fromnumbers{ix,1};
     jx = indcfind(x_enrolled(:,f_cellphone),tmp_fromnumber,'regexpi');
+    
     tmp_BLdate = x_enrolled{jx(1),f_baseline};
     unique_fromnumbers{ix,2} = tmp_BLdate; 
+    
+    tmp_StudyID = x_enrolled{jx(1),f_StudyID};
+    unique_fromnumbers{ix,3} = tmp_StudyID; 
     
 end
 
 % collect unique answers by day
 x_pst_data_01_byday = {};
+f_fromID = f_fromnumber;
 
 for ix=1:size(unique_fromnumbers,1)
 
     tmp_fromnumber = unique_fromnumbers{ix,1};
     tmp_BLdate = unique_fromnumbers{ix,2};
+    tmp_StudyID = unique_fromnumbers{ix,3};
     
     tmp_chunk = x_pst_data_01(indcfind(x_pst_data_01(:,f_fromnumber),tmp_fromnumber,'regexpi'),:);
     
+    % relabel with StudyID
+    tmp_chunk(:,f_fromnumber) = strrep(tmp_chunk(:,f_fromnumber),tmp_fromnumber,tmp_StudyID);
+    
+    % get date/times
     tmp_chunk_dt = cell2mat(tmp_chunk(:,f_datetime));
     
     for jx=1:42
@@ -137,17 +149,17 @@ end
 
 % summarize over whole study
 x_summary_study = {};
-h_summary_study = {'From', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1'};
+h_summary_study = {'StudyID', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1'};
 for ix=1:size(unique_fromnumbers,1)
 
-  tmp_fromnum = unique_fromnumbers{ix,1};
+  tmp_StudyID = unique_fromnumbers{ix,3};
   
-  tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromnumber),tmp_fromnum,'regexpi'),:);
+  tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromID),tmp_StudyID,'regexpi'),:);
 
   tmp_0 = size(indcfind(tmp_chunk(:,f_body),'^0$','regexpi'),1);
   tmp_1 = size(indcfind(tmp_chunk(:,f_body),'^1$','regexpi'),1);
 
-  x_summary_study{ix,1} = tmp_fromnum;
+  x_summary_study{ix,1} = tmp_StudyID;
   x_summary_study{ix,2} = tmp_0;
   x_summary_study{ix,3} = tmp_1;
   x_summary_study{ix,4} = (tmp_0+tmp_1);
@@ -164,16 +176,16 @@ end
 
 % summarize week by week
 x_summary_week = {};
-h_summary_week = {'From', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1', 'Week'};
+h_summary_week = {'StudyID', 'NumberResponses_0', 'NumberResponses_1', 'NumberResponses_Total', 'PercentageTotalPossible_0', 'PercentageTotalPossible_1', 'PercentageTotal_1', 'Week'};
 index = 0;
 
 for ix=1:size(unique_fromnumbers,1)
 
 
-  tmp_fromnum = unique_fromnumbers{ix,1};
+  tmp_StudyID = unique_fromnumbers{ix,1};
   tmp_BLdate = unique_fromnumbers{ix,2};
   
-  tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromnumber),tmp_fromnum,'regexpi'),:);
+  tmp_chunk = x_pst_data_01_byday(indcfind(x_pst_data_01_byday(:,f_fromID),tmp_StudyID,'regexpi'),:);
   tmp_chunk = sortrows(tmp_chunk,f_datetime);
   tmp_chunk_dt = cell2mat(tmp_chunk(:,f_datetime));
   
@@ -191,7 +203,7 @@ for ix=1:size(unique_fromnumbers,1)
         tmp_0 = size(indcfind(tmp_chunk_wk(:,f_body),'^0$','regexpi'),1);
         tmp_1 = size(indcfind(tmp_chunk_wk(:,f_body),'^1$','regexpi'),1);
         
-        x_summary_week{index,1} = tmp_fromnum;
+        x_summary_week{index,1} = tmp_StudyID;
         x_summary_week{index,2} = tmp_0;
         x_summary_week{index,3} = tmp_1;
         x_summary_week{index,4} = (tmp_0+tmp_1);
