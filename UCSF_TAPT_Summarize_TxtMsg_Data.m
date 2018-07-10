@@ -33,7 +33,7 @@ end
 
 % read in raw txt msg data
 % tapt_sms_raw_data_f = 'C:\Users\fliu2\Box Sync\UCSF_TAPT_Share\UCSF_TAPT_ReceivedMessages.csv';
-tapt_sms_raw_data_f = 'UCSF_TAPT_ReceivedMessages_20180523_processed.csv';
+tapt_sms_raw_data_f = 'UCSF_TAPT_ReceivedMessages_20180710_processed.csv';
 
 [~,~,x_raw_data] = xlsread(tapt_sms_raw_data_f);
 
